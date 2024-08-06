@@ -1,6 +1,5 @@
 package org.hotel.hotel.globalexception;
 
-import org.hotel.hotel.exceptions.CustomerNotFound;
 import org.hotel.hotel.exceptions.EmailAlreadyExistsException;
 import org.hotel.hotel.exceptions.HotelAlreadyExists;
 import org.springframework.http.HttpStatus;
