@@ -112,16 +112,16 @@ public class AdminService {
         return modelMapper.map(adminDetails,AdminResponse.class);
 
     }
+    @Transactional
     public AdminResponse updateAdmin(AdminRequest adminRequest)
     {
         Authentication authentication= SecurityContextHolder.getContext().getAuthentication();
-    AdminDetails adminByEmail = adminRepository.findByEmail(authentication.getName()).orElseThrow(() -> new EmailAlreadyExistsException(format("Admin With email %s not exists", authentication.getName())));
+        AdminDetails adminByEmail = adminRepository.findByEmail(authentication.getName()).orElseThrow(() -> new EmailAlreadyExistsException(format("Admin With email %s not exists", authentication.getName())));
         adminByEmail.setEmail(adminRequest.getEmail());
         adminByEmail.setPassword(passwordEncoder.encode(adminRequest.getPassword()));
         adminByEmail.setUsername(adminRequest.getUsername());
         List<String> roles = adminByEmail.getRoles();
         System.out.println("Updated roles: " + roles);
-
         adminRequest.setRoles(roles);
         adminRepository.save(adminByEmail);
         return modelMapper.map(adminByEmail,AdminResponse.class);

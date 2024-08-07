@@ -29,6 +29,8 @@ public class WebSecurityConfig {
                         request->request
                                 .requestMatchers("/public/**").permitAll()
                                 .requestMatchers("/admin/**").authenticated()
+                                .requestMatchers("/hotels/").authenticated()
+                                .requestMatchers("/rooms/").authenticated()
                                 .anyRequest().authenticated()
                 ).httpBasic(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
