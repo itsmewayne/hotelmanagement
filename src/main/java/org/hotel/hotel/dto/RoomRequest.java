@@ -17,8 +17,8 @@ public class RoomRequest {
     private Long id;
     private Integer roomNumber;
     private String type;
-    private Double price;
-    private Boolean isOccupied;
+    private Double pricePerMonth;
+    private Boolean isOccupied=false;
     private Integer numberOfBeds;
     private List<BedRequest> beds=new ArrayList<>();
 

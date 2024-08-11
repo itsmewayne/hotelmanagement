@@ -21,5 +21,6 @@ public class HotelRequest {
     private List<RoomRequest> rooms;
     private Integer totalRooms;
     private Integer intialRoomNumber;
+    private Boolean isOccupied=false;
 
 }

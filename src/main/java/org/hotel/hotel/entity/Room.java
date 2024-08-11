@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hotel.hotel.dto.RoomType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +21,7 @@ public class Room {
     private Long id;
     private String type;
 
-    private Double price;
+    private Double pricePerMonth;
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "room_id")
     private List<Bed> beds=new ArrayList<>();
@@ -31,7 +30,10 @@ public class Room {
     @JoinColumn(name = "hotel_id")
     private Hotel hotel;
 
-    private Boolean isOccupied;
+    private Boolean isOccupied=false;
     private Integer roomNumber;
+
+    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Reservation> reservations;
 
 }

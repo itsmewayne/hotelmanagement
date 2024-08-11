@@ -1,28 +1,29 @@
 package org.hotel.hotel.services;
 
-import org.hotel.hotel.dto.AdminRequest;
-import org.hotel.hotel.dto.AdminResponse;
+import lombok.extern.slf4j.Slf4j;
+import org.hotel.hotel.dto.*;
 import org.hotel.hotel.entity.AdminDetails;
+import org.hotel.hotel.entity.Hotel;
+import org.hotel.hotel.entity.User;
 import org.hotel.hotel.exceptions.EmailAlreadyExistsException;
 import org.hotel.hotel.repository.AdminRepository;
+import org.hotel.hotel.repository.HotelRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static java.lang.String.*;
 
 @Service
+@Slf4j
 public class AdminService {
 
     @Autowired
@@ -31,6 +32,8 @@ public class AdminService {
     private ModelMapper modelMapper;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private HotelRepository hotelRepository;
 
     @Transactional
     public AdminResponse createAdmin(AdminRequest adminRequest)
@@ -45,16 +48,6 @@ public class AdminService {
         return modelMapper.map(admin,AdminResponse.class);
     }
 
-    public boolean saveNewUser(AdminRequest adminRequest) {
-        try {
-            adminRequest.setPassword(passwordEncoder.encode(adminRequest.getPassword()));
-            adminRequest.setRoles(Arrays.asList("USER"));
-            adminRepository.save(modelMapper.map(adminRequest,AdminDetails.class));
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-    }
 
     @Transactional
     public AdminResponse saveSuperAdmin(AdminRequest adminRequest) {

@@ -2,19 +2,15 @@ package org.hotel.hotel.services;
 
 import lombok.extern.slf4j.Slf4j;
 import org.hotel.hotel.dto.*;
-import org.hotel.hotel.entity.AdminDetails;
-import org.hotel.hotel.entity.Bed;
-import org.hotel.hotel.entity.Hotel;
-import org.hotel.hotel.entity.Room;
+import org.hotel.hotel.entity.*;
 import org.hotel.hotel.exceptions.EmailAlreadyExistsException;
 import org.hotel.hotel.exceptions.HotelAlreadyExists;
 import org.hotel.hotel.exceptions.RoomException;
-import org.hotel.hotel.repository.AdminRepository;
-import org.hotel.hotel.repository.BedRepository;
-import org.hotel.hotel.repository.HotelRepository;
-import org.hotel.hotel.repository.RoomRepository;
+import org.hotel.hotel.repository.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,6 +40,10 @@ public class HotelService {
     private RoomRepository roomRepository;
     @Autowired
     private BedRepository bedRepository;
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private UserRepository userRepository;
     public List<HotelResponse> getAllHotels(String email) {
         AdminResponse admin = adminService.getAdminByEmail(email);
         List<Hotel> byAdminEmail = hotelRepository.findByAdmin_Email(email);
@@ -51,6 +51,17 @@ public class HotelService {
                 .map(hotel -> modelMapper.map(hotel, HotelResponse.class))
                 .collect(Collectors.toList());
     }
+
+    public HotelResponse getAllHotelsByUsers(String email) {
+        // Fetch the hotel associated with the user
+        Hotel hotel = hotelRepository.findByUser_Email(email)
+                .orElseThrow(() -> new RuntimeException("Hotel not found for the user"));
+
+        // Map the hotel entity to a HotelResponse DTO
+        return modelMapper.map(hotel, HotelResponse.class);
+    }
+
+
 
     public Optional<HotelResponse> getHotelById(Long id) {
         // Find the hotel by its ID
@@ -172,7 +183,7 @@ public class HotelService {
             if (existingRoom != null) {
                 // Update existing room details
                 existingRoom.setType(roomRequest.getType());
-                existingRoom.setPrice(roomRequest.getPrice());
+                existingRoom.setPricePerMonth(roomRequest.getPricePerMonth());
                 existingRoom.setIsOccupied(roomRequest.getIsOccupied());
 //                existingRoom.setBeds(roomRequest.getBeds());
                 existingRoom.setType(roomRequest.getType());

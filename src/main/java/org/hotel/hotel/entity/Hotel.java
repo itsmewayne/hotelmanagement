@@ -35,4 +35,7 @@ public class Hotel {
     @JoinColumn(name = "admin_id", nullable = false)
     @JsonIgnore
     private AdminDetails admin;
+
+    @OneToOne(mappedBy = "hotel")
+    private User user;
 }

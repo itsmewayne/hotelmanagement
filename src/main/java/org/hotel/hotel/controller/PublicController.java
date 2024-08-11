@@ -4,14 +4,13 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.hotel.hotel.dto.AdminRequest;
 import org.hotel.hotel.dto.AdminResponse;
+import org.hotel.hotel.dto.UserRequest;
+import org.hotel.hotel.dto.UserResponse;
 import org.hotel.hotel.services.AdminService;
+import org.hotel.hotel.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -25,12 +24,13 @@ public class PublicController {
 //    private UserDetailsServiceImpl userDetailsService;
     @Autowired
     private AdminService adminService;
-
+    @Autowired
+    private UserService userService;
 //    @Autowired
 //    private JwtUtil jwtUtil;
 
 
-    @PostMapping("/signup")
+    @PostMapping("/admin/signup")
     public ResponseEntity<?> createAdmin(@RequestBody AdminRequest adminRequest)
     {
         AdminResponse admin = adminService.createAdmin(adminRequest);
@@ -39,6 +39,17 @@ public class PublicController {
             return new ResponseEntity<>(admin, HttpStatus.CREATED);
         }
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+    @PostMapping("/user/signup/hotelId/{hotelId}")
+    public ResponseEntity<UserResponse> createUser(@RequestBody UserRequest userRequest , @PathVariable Long hotelId) {
+
+        UserResponse user = userService.saveNewUser(userRequest,hotelId);
+        if (user!=null)
+        {
+            return new ResponseEntity<>(user, HttpStatus.CREATED);
+        }
+        return new ResponseEntity<>( HttpStatus.BAD_REQUEST);
+
     }
     @PostMapping("/superadmin/signup")
     public ResponseEntity<?> createSuperAdmin(@RequestBody AdminRequest adminRequest) {

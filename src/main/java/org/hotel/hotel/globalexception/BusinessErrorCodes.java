@@ -15,10 +15,14 @@ public enum BusinessErrorCodes {
     ACCOUNT_DISABLED(303, FORBIDDEN, "User account is disabled"),
     BAD_CREDENTIALS(304, FORBIDDEN, "Login and / or Password is incorrect"),
     HOTEL_NOT_FOUND(305, BAD_REQUEST, "Hotel not found"),
+    HOTEL_FULL(403,FORBIDDEN, "The hotel is fully occupied."),
     ROOM_EXCEPTION(305, BAD_REQUEST, "Room not found "),
     RESOURCE_NOT_FOUND(305, BAD_REQUEST, "Resource not found"),
+    USER_ASSIGNED_ALREADY(305, BAD_REQUEST, "User Assigned Already"),
 
-    EMAIL_EXISTS(305,BAD_REQUEST,"Email Already Exists")
+    EMAIL_EXISTS(305,BAD_REQUEST,"Email Already Exists"),
+    ACCESS_DENIED(403,BAD_REQUEST,"You are not authorized to access this resource"),
+    RESERVATION_EXCEPTION(305,BAD_REQUEST,"Reservation Already Exists"),
     ;
 
     @Getter

@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -15,7 +16,7 @@ public class HotelResponse {
     private String name;
     private String location;
     private Float rating;
-    private List<RoomResponse> rooms;
+    private List<RoomResponse> rooms=new ArrayList<>();
     private Integer totalRooms;
 
 }

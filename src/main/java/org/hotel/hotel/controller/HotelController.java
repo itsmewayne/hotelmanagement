@@ -1,11 +1,14 @@
 package org.hotel.hotel.controller;
 
+import org.hotel.hotel.dto.AdminResponse;
 import org.hotel.hotel.dto.DeletedResponse;
 import org.hotel.hotel.dto.HotelRequest;
 import org.hotel.hotel.dto.HotelResponse;
+import org.hotel.hotel.entity.AdminDetails;
 import org.hotel.hotel.entity.Hotel;
+import org.hotel.hotel.services.AdminService;
 import org.hotel.hotel.services.HotelService;
-import org.hotel.hotel.services.RoomService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +28,7 @@ public class HotelController {
     private HotelService hotelService;
 
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('SUPERADMIN') or hasRole('USER')")
     @GetMapping
     public ResponseEntity<List<HotelResponse>> getAllHotels() {
         Authentication authentication=SecurityContextHolder.getContext().getAuthentication();
@@ -32,6 +36,16 @@ public class HotelController {
         List<HotelResponse> hotels = hotelService.getAllHotels(email);
         return new ResponseEntity<>(hotels, HttpStatus.OK);
     }
+    @PreAuthorize("hasRole('ADMIN') or hasRole('SUPERADMIN') or hasRole('USER')")
+    @GetMapping("/all")
+    public ResponseEntity<HotelResponse> getAllHotelsForUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        HotelResponse hotel = hotelService.getAllHotelsByUsers(email);
+        return new ResponseEntity<>(hotel, HttpStatus.OK);
+    }
+
+
 
     @GetMapping("/{id}")
     public ResponseEntity<HotelResponse> getHotelById(@PathVariable Long id) {
@@ -43,6 +57,7 @@ public class HotelController {
     }
 
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<HotelResponse> createHotel(@RequestBody HotelRequest hotelRequest) {
         Authentication authentication= SecurityContextHolder.getContext().getAuthentication();
