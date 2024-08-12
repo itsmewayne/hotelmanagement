@@ -39,6 +39,8 @@ public class ReservationService {
 
     @Autowired
     private HotelRepository hotelRepository;
+    @Autowired
+    private ReservationHistoryRepository reservationHistoryRepository;
     public boolean checkBedAvailabilityTime(Long bedId, LocalDate checkInDate, LocalDate checkOutDate, Long roomId) {
         // Find all reservations overlapping with the provided dates for the specific bed and room
         List<Reservation> overlappingReservations = reservationRepository.findByBedIdAndRoomIdAndDateRange(bedId, roomId, checkInDate, checkOutDate);
@@ -197,7 +199,7 @@ public class ReservationService {
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new ReservationException("Reservation not found with id " + reservationId));
 
-        // Get the associated bed and room
+        // Get the associated bed, room, and hotel
         Bed bed = reservation.getBed();
         Room room = reservation.getRoom();
         Hotel hotel = room.getHotel();
@@ -206,18 +208,35 @@ public class ReservationService {
         bed.setIsOccupied(false);
         bedRepository.save(bed);
 
-        // Set the room as not occupied if there are any unoccupied beds
+        // Update the room's occupancy status if there are any unoccupied beds
         updateRoomOccupancyStatus(room.getId());
 
-        // Set the hotel as not occupied if there are any unoccupied rooms
+        // Update the hotel's occupancy status if there are any unoccupied rooms
         updateHotelOccupancyStatus(hotel.getId());
 
         // Remove the reservation
         reservationRepository.delete(reservation);
 
+        // Create or update reservation history using the builder pattern
+        ReservationHistory reservationHistory = ReservationHistory.builder()
+                .reservationId(reservation.getId())
+                .guestName(reservation.getGuestName())
+                .checkInDate(reservation.getCheckInDate())
+                .checkOutDate(reservation.getCheckOutDate())
+                .isBedOccupied(false)
+                .isRoomOccupied(room.getIsOccupied())
+                .isHotelOccupied(hotel.getIsOccupied())
+                .bed(bed)
+                .room(room)
+                .hotel(hotel)
+                .build();
+
+        reservationHistoryRepository.save(reservationHistory);
+
         // Log the changes
-        log.info("Reservation ID: " + reservationId + " has been vacated.");
+        log.info("Reservation ID: " + reservationId + " has been vacated and history updated.");
     }
+
 
     @Transactional
     public boolean updateHotelOccupancyStatus(Long hotelId) {
