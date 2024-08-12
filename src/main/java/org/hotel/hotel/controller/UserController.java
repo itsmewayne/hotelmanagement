@@ -29,18 +29,22 @@ public class UserController {
     private HotelService hotelService;
 
 
-    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')" )
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @GetMapping("/id/{id}")
-    public ResponseEntity<UserResponse> getUserByEmail(@PathVariable Long id) {
-        Authentication authentication=SecurityContextHolder.getContext().getAuthentication();
-        UserResponse byId = userService.findById(id);
+    public ResponseEntity<UserResponse> getUserById(@PathVariable Long id) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
-        if (byId.getEmail().equals(email))
-        {
 
-            UserResponse userResponse = userService.findUserByEmail(email);
+        // Fetch the user details by ID
+        UserResponse userResponse = userService.findById(id);
+
+        // Check if the logged-in user is trying to access their own details
+        if (userResponse != null && userResponse.getEmail().equals(email)) {
             return new ResponseEntity<>(userResponse, HttpStatus.OK);
         }
+
+        // Return 404 if the user is not found or the ID doesn't match the logged-in user's email
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
+
 }

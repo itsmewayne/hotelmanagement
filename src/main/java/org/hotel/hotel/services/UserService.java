@@ -15,6 +15,7 @@ import org.hotel.hotel.repository.HotelRepository;
 import org.hotel.hotel.repository.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -68,7 +69,7 @@ public class UserService {
 
         // Map the saved user entity to a UserResponse DTO and return it
         return UserResponse.builder()
-                .hotelResponse(modelMapper.map(hotel,HotelResponse.class))
+                .hotel(modelMapper.map(user.getHotel(),HotelResponse.class))
                 .id(savedUser.getId())
                 .username(savedUser.getUsername())
                 .email(savedUser.getEmail())
@@ -82,7 +83,7 @@ public class UserService {
 
         return UserResponse.builder()
                 .email(user.getEmail())
-                .hotelResponse(modelMapper.map(user.getHotel(),HotelResponse.class))
+                .hotel(modelMapper.map(user.getHotel(),HotelResponse.class))
                 .username(user.getUsername())
                 .id(user.getId())
                 .build();
@@ -90,7 +91,7 @@ public class UserService {
     }
     public UserResponse findById(Long id)
     {
-        User user = userRepository.findById(id).orElseThrow(() -> new EmailAlreadyExistsException(format("User with email %s not found", id)));
+        User user = userRepository.findById(id).orElseThrow(() -> new AccessDeniedException(format("You are not authorized ")));
         return modelMapper.map(user,UserResponse.class);
     }
 }
