@@ -17,5 +17,5 @@ public class UserResponse {
     private Long id;
     private String email;
     private String username;
-    private HotelResponse hotelResponse;
+    private HotelResponse hotel;
 }
