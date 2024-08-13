@@ -31,3 +31,15 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Environment files
+.env
+# Log files
+*.log
+# Dependency caches
+.m2/
+.gradle/
